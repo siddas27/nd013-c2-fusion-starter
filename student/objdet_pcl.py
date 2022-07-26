@@ -80,10 +80,10 @@ def show_range_image(frame, lidar_name):
     ri_range = ri_range * 255 / (np.amax(ri_range) - np.amin(ri_range))
 
     # step 5 : map the intensity channel onto an 8-bit scale and normalize with the difference between the 1- and 99-percentile to mitigate the influence of outliers
-    ri_intensity = np.amax(ri_intensity)/2 * ri_intensity * 255 / (np.amax(ri_intensity) - np.amin(ri_intensity))
+    ri_intensity = np.amax(ri_intensity) / 2 * ri_intensity * 255 / (np.amax(ri_intensity) - np.amin(ri_intensity))
 
     # step 6 : stack the range and intensity image vertically using np.vstack and convert the result to an unsigned 8-bit integer
-    ri_range_intensity = np.vstack(ri_range,ri_intensity)
+    ri_range_intensity = np.vstack(ri_range, ri_intensity)
     img_range_intensity = ri_range_intensity.astype(np.uint8)
     # img_range_intensity = []  # remove after implementing all steps
     #######
@@ -118,7 +118,7 @@ def bev_from_pcl(lidar_pcl, configs):
     lidar_pcl_cpy[:, 1] = np.int_(np.floor(lidar_pcl_cpy[:, 1] / bev_discret) + (configs.bev_width + 1) / 2)
 
     # step 4 : visualize point-cloud using the function show_pcl from a previous task
-    show_pcl(lidar_pcl_cpy[:,:3])
+    show_pcl(lidar_pcl_cpy[:, :3])
     #######
     ####### ID_S2_EX1 END #######     
 
@@ -132,6 +132,7 @@ def bev_from_pcl(lidar_pcl, configs):
     intensity_map = np.zeros((configs.bev_height + 1, configs.bev_width + 1))
 
     # step 2 : re-arrange elements in lidar_pcl_cpy by sorting first by x, then y, then -z (use numpy.lexsort)
+    lidar_pcl_cpy[lidar_pcl_cpy[:, 3] > 1.0, 3] = 1.0
     idx_height = np.lexsort((-lidar_pcl_cpy[:, 2], lidar_pcl_cpy[:, 1], lidar_pcl_cpy[:, 0]))
     lidar_top_pcl = lidar_pcl_cpy[idx_height]
 
@@ -149,11 +150,11 @@ def bev_from_pcl(lidar_pcl, configs):
     ## step 5 : temporarily visualize the intensity map using OpenCV to make sure that vehicles separate well from the background
     img_intensity = intensity_map * 256
     img_intensity = img_intensity.astype(np.uint8)
-    while (1):
-        cv2.imshow('img_intensity', img_intensity)
-        if cv2.waitKey(10) & 0xFF == 27:
-            break
-    cv2.destroyAllWindows()
+    # while (1):
+    #     cv2.imshow('img_intensity', img_intensity)
+    #     if cv2.waitKey(10) & 0xFF == 27:
+    #         break
+    # cv2.destroyAllWindows()
     #######
     ####### ID_S2_EX2 END ####### 
 
@@ -171,13 +172,13 @@ def bev_from_pcl(lidar_pcl, configs):
     height_map[np.int_(lidar_top_pcl[:, 0]), np.int_(lidar_top_pcl[:, 1])] = lidar_top_pcl[:, 2] / float(
         np.abs(configs.lim_z[1] - configs.lim_z[0]))
     ## step 3 : temporarily visualize the intensity map using OpenCV to make sure that vehicles separate well from the background
-    img_intensity = height_map * 256
-    img_intensity = img_intensity.astype(np.uint8)
-    while (1):
-        cv2.imshow('img_intensity', img_intensity)
-        if cv2.waitKey(10) & 0xFF == 27:
-            break
-    cv2.destroyAllWindows()
+    img_height = height_map * 256
+    img_height = img_height.astype(np.uint8)
+    # while (1):
+    #     cv2.imshow('img_height', img_height)
+    #     if cv2.waitKey(10) & 0xFF == 27:
+    #         break
+    # cv2.destroyAllWindows()
     #######
     ####### ID_S2_EX3 END #######       
 

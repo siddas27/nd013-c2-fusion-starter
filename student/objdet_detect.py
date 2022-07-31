@@ -56,6 +56,7 @@ def load_configs_model(model_name='darknet', configs=None):
         configs.num_workers = 4
         configs.pin_memory = True
         configs.use_giou_loss = False
+        configs.min_iou =0.4
 
     elif model_name == 'fpn_resnet':
         ####### ID_S3_EX1-3 START #######     
@@ -180,12 +181,22 @@ def detect_objects(input_bev_maps, model, configs):
     objects = [] 
 
     ## step 1 : check whether there are any detections
-
+    if detections:
         ## step 2 : loop over all detections
-        
+        for row in detections:
             ## step 3 : perform the conversion using the limits for x, y and z set in the configs structure
         
             ## step 4 : append the current object to the 'objects' array
+            id, bev_x, bev_y, z, h, bev_w, bev_l, yaw = row
+
+            ## step 3 : perform the conversion using the limits for x, y and z set in the configs structure
+            x = (bev_y / configs.bev_height) * (configs.lim_x[1] - configs.lim_x[0]) + configs.lim_x[0]
+            y = (bev_x / configs.bev_width) * (configs.lim_y[1] - configs.lim_y[0]) + configs.lim_y[0]
+            w = (bev_w / configs.bev_width) * (configs.lim_y[1] - configs.lim_y[0])
+            l = (bev_l / configs.bev_height) * (configs.lim_x[1] - configs.lim_x[0])
+
+            ## step 4 : append the current object to the 'objects' array
+            objects.append([id, x, y, z, h, w, l, -yaw])
         
     #######
     ####### ID_S3_EX2 START #######   

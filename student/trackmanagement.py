@@ -26,7 +26,7 @@ class Track:
     '''Track class with state, covariance, id, score'''
     def __init__(self, meas, id):
         print('creating track no.', id)
-        M_rot = meas.sensor.sens_to_veh[0:3, 0:3] # rotation matrix from sensor to vehicle coordinates
+        M_rot = meas.sensor.sens_to_veh[0:3, 0:3]  # rotation matrix from sensor to vehicle coordinates
         
         ############
         # TODO Step 2: initialization:

@@ -64,16 +64,22 @@ class Sensor:
         elif self.name == 'camera':
             
             ############
-            # TODO Step 4: implement nonlinear camera measurement function h:
+            # Step 4: implement nonlinear camera measurement function h:
             # - transform position estimate from vehicle to camera coordinates
             # - project from camera to image coordinates
             # - make sure to not divide by zero, raise an error if needed
             # - return h(x)
             ############
 
-            pass
-        
-            ############
+            hx = np.zeros((2, 1))
+            if x[0] == 0:
+                raise NameError('Jacobian not defined for x[0]=0!')
+            else:
+                hx[0, 0] = self.c_i - self.f_i * x[1] / x[0]  # project to image coordinates
+                hx[1, 0] = self.c_j - self.f_j * x[2] / x[0]
+                return hx
+
+                ############
             # END student code
             ############ 
         
@@ -155,8 +161,9 @@ class Measurement:
             ############
             # TODO Step 4: initialize camera measurement including z and R 
             ############
+            sigma_cam_i = params.sigma_cam_i
+            sigma_cam_j = params.sigma_cam_j
 
-            pass
         
             ############
             # END student code

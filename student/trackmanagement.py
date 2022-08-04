@@ -49,7 +49,7 @@ class Track:
         pos_sens[0:3] = meas.z[0:3]
         pos_veh = meas.sensor.sens_to_veh * pos_sens
 
-        self.x = np.zeros((6, 1))
+        self.x = np.asmatrix(np.zeros((6, 1)))
         self.x[0:3] = pos_veh[0:3]
 
         # self.P = np.matrix([[9.0e-02, 0.0e+00, 0.0e+00, 0.0e+00, 0.0e+00, 0.0e+00],
@@ -69,7 +69,7 @@ class Track:
                            [0, 0, sigma_p66 ** 2]])
 
         # overall covariance initialization
-        self.P = np.zeros((6, 6))
+        self.P = np.asmatrix(np.zeros((6, 6)))
         self.P[0:3, 0:3] = P_pos
         self.P[3:6, 3:6] = P_vel
 
@@ -140,13 +140,11 @@ class Trackmanagement:
 
         # delete old tracks
         for track in self.track_list:
-            Pd = np.diag(track.P)
-            if track.state == 'confirmed':
-                if track.score < params.delete_threshold:
-                    self.delete_track(track)
-            else:
-                if track.score < 0.17 or Pd.any() > params.max_P:
-                    self.delete_track(track)
+            P_of_x = track.P[0, 0]
+            P_of_y = track.P[1, 1]
+            P_ave = np.sqrt(P_of_x ** 2 + P_of_y ** 2)
+            if (track.score < params.delete_threshold and track.state == 'confirmed') or P_ave > params.max_P:
+                self.delete_track(track)
 
         ############
         # END student code

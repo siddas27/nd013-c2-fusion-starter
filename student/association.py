@@ -43,23 +43,24 @@ class Association:
         N = len(track_list)
         M = len(meas_list)
         # the following only works for at most one track and one measurement
-        self.association_matrix = np.inf * np.ones((N, M))  # reset matrix
+        self.association_matrix = np.matrix([])  # reset matrix
         self.unassigned_tracks = []  # reset lists
         self.unassigned_meas = []
 
-
-
         if len(meas_list) > 0:
-            self.unassigned_meas = [i for i in range(M)]
+            self.unassigned_meas = list(range(M))
         if len(track_list) > 0:
-            self.unassigned_tracks = [j for j in range(N)]
+            self.unassigned_tracks = list(range(N))
         if len(meas_list) > 0 and len(track_list) > 0:
+            self.association_matrix = np.asmatrix(np.inf * np.ones((N, M)))
+
             for i in range(N):
                 track = track_list[i]
                 for j in range(M):
                     meas = meas_list[j]
                     dist = self.MHD(track, meas, KF)
-                    self.association_matrix[i, j] = dist
+                    if self.gating(dist,meas.sensor):
+                        self.association_matrix[i, j] = dist
 
         ############
         # END student code
@@ -105,8 +106,11 @@ class Association:
         ############
         # TODO Step 3: return True if measurement lies inside gate, otherwise False
         ############
-
-        limit = chi2.ppf(params.gating_threshold, df=2)
+        if sensor=='lidar':
+            DOF = 2
+        else:
+            DOF =1
+        limit = chi2.ppf(params.gating_threshold, df=DOF)
         if MHD < limit:
             return True
         else:
@@ -121,9 +125,9 @@ class Association:
         # TODO Step 3: calculate and return Mahalanobis distance
         ############
         H = meas.sensor.get_H(track.x)
-        gamma = meas.z - H * track.x
-        S = H * track.P * H.transpose() + meas.R
-        return gamma.transpose() * np.linalg.inv(S) * gamma
+        gamma = KF.gamma(track, meas)
+        Si = np.linalg.inv(KF.S(track,meas,H))
+        return gamma.transpose() * Si * gamma
 
         ############
         # END student code

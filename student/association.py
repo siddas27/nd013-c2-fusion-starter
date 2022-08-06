@@ -36,7 +36,7 @@ class Association:
     def associate(self, track_list, meas_list, KF):
 
         ############
-        # TODO Step 3: association:
+        # Step 3: association:
         # - replace association_matrix with the actual association matrix based on Mahalanobis distance (see below) for all tracks and all measurements
         # - update list of unassigned measurements and unassigned tracks
         ############
@@ -54,13 +54,13 @@ class Association:
         if len(meas_list) > 0 and len(track_list) > 0:
             self.association_matrix = np.asmatrix(np.inf * np.ones((N, M)))
 
-            for i in range(N):
-                track = track_list[i]
-                for j in range(M):
-                    meas = meas_list[j]
-                    dist = self.MHD(track, meas, KF)
-                    if self.gating(dist,meas.sensor):
-                        self.association_matrix[i, j] = dist
+        for i in range(N):
+            track = track_list[i]
+            for j in range(M):
+                meas = meas_list[j]
+                dist = self.MHD(track, meas, KF)
+                if self.gating(dist, meas.sensor):
+                    self.association_matrix[i, j] = dist
 
         ############
         # END student code
@@ -95,7 +95,7 @@ class Association:
         # remove from list
         self.unassigned_tracks.remove(update_track)
         self.unassigned_meas.remove(update_meas)
-        self.association_matrix = np.matrix([])
+        # self.association_matrix = np.matrix([])
 
         ############
         # END student code
@@ -104,13 +104,13 @@ class Association:
 
     def gating(self, MHD, sensor):
         ############
-        # TODO Step 3: return True if measurement lies inside gate, otherwise False
+        # Step 3: return True if measurement lies inside gate, otherwise False
         ############
-        if sensor=='lidar':
-            DOF = 2
+        if sensor == 'lidar':
+            dof = 2
         else:
-            DOF =1
-        limit = chi2.ppf(params.gating_threshold, df=DOF)
+            dof = 1
+        limit = chi2.ppf(params.gating_threshold, df=dof)
         if MHD < limit:
             return True
         else:
@@ -122,12 +122,13 @@ class Association:
 
     def MHD(self, track, meas, KF):
         ############
-        # TODO Step 3: calculate and return Mahalanobis distance
+        # Step 3: calculate and return Mahalanobis distance
         ############
         H = meas.sensor.get_H(track.x)
         gamma = KF.gamma(track, meas)
-        Si = np.linalg.inv(KF.S(track,meas,H))
-        return gamma.transpose() * Si * gamma
+        Si = np.linalg.inv(KF.S(track, meas, H))
+        MHD = np.sqrt(gamma.transpose() * Si * gamma)
+        return MHD
 
         ############
         # END student code

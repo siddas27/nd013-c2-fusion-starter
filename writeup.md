@@ -9,16 +9,23 @@ Please use this starter template to answer the following questions:
 Implemented an EKF filter to track a single target with lidar measurement. Implemented predict and update function for 
 an EKF, computation of a system matrix for constant velocity process model in 3D and the 
 corresponding process noise covariance depending on the current timestep dt. 
+
 ![step1](img/step1.png)
+
 - Track management: Implemented the initialization of x, P, track score and track status and update routine for those four parameters.
+- 
 ![step2](img/step2.png)
+
 - Association: Created association matrix based on Mahalanobis distance and kept a track of unassociated track and measurements.
 The  image below shows ghost track.
+
 ![step3](img/step3.png)
 ![gt](img/ghost_track.png)
 
 - Camera fusion: Added camera fusion by adding camera measurements to the Kalman Filter.
+- 
 ![step4](img/step4.png)
+![video](my_tracking_results.avi)
 ### 2. Do you see any benefits in camera-lidar fusion compared to lidar-only tracking (in theory and in your concrete results)? 
 Adding camera fusion improves the accuracy of the tracking as it improves the detection and decreases overall error in tracking.
 

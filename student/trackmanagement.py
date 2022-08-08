@@ -48,7 +48,6 @@ class Track:
         pos_sens = np.ones((4, 1))  # homogeneous coordinates
         pos_sens[0:3] = meas.z[0:3]
         pos_veh = meas.sensor.sens_to_veh * pos_sens
-
         self.x = np.asmatrix(np.zeros((6, 1)))
         self.x[0:3] = pos_veh[0:3]
 
@@ -78,7 +77,7 @@ class Track:
 
         ############
         # END student code
-        ############ 
+        ############
 
         # other track attributes
         self.id = id
@@ -110,7 +109,7 @@ class Track:
                 meas.yaw))  # transform rotation from sensor to vehicle coordinates
 
 
-###################        
+###################
 
 class Trackmanagement:
     '''Track manager with logic for initializing and deleting objects'''
@@ -132,23 +131,25 @@ class Trackmanagement:
         # decrease score for unassigned tracks
         for i in unassigned_tracks:
             track = self.track_list[i]
-            # check visibility    
+            # check visibility
             if meas_list:  # if not empty
                 if meas_list[0].sensor.in_fov(track.x):
                     # your code goes here
+                    track.state = 'tentative'
+                    if track.score > params.delete_threshold + 1:
+                        track.score = params.delete_threshold + 1
                     track.score -= 1. / params.window
 
-        # delete old tracks
+            # delete old track
         for track in self.track_list:
-            P_of_x = track.P[0, 0]
-            P_of_y = track.P[1, 1]
-            P_ave = np.sqrt(P_of_x ** 2 + P_of_y ** 2)
-            if (track.score < params.delete_threshold and track.state == 'confirmed') or P_ave > params.max_P:
+            if track.state=='confirmed' and track.score <= params.delete_threshold:
+                self.delete_track(track)
+            elif track.state!='confirmed' and track.P[0, 0] >= params.max_P or track.P[1, 1] >= params.max_P or track.score <0.17:
                 self.delete_track(track)
 
         ############
         # END student code
-        ############ 
+        ############
 
         # initialize new track with unassigned measurement
         for j in unassigned_meas:

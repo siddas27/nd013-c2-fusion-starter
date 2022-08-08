@@ -10,11 +10,16 @@ Results:
 ### Visualize lidar point-cloud (ID_S1_EX2)
 - Find and display 6 examples of vehicles with varying degrees of visibility in the point-cloud
 ![v1](img/v1.png)
+In the above point cloud, vehicles inside the circle are closer to the ego vehicle and 
+therefore have large no. of points and vehicles outside the circle are far away and thus have fewer points.
 ![ri](img/v2.png)
-![ri](img/v3.png)
+
+[//]: # (![ri]&#40;img/v3.png&#41;)
 ![ri](img/v4.png)
-![ri](img/v5.png)
-![ri](img/v6.png)
+
+[//]: # (![ri]&#40;img/v5.png&#41;)
+
+[//]: # (![ri]&#40;img/v6.png&#41;)
 
 - Identify vehicle features that appear as a stable feature on most vehicles (e.g. rear-bumper, tail-lights) and describe them briefly. 
 ![ri](img/f1.jpeg)

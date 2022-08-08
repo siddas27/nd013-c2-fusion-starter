@@ -25,7 +25,7 @@ The  image below shows ghost track.
 - Camera fusion: Added camera fusion by adding camera measurements to the Kalman Filter.
 - 
 ![step4](img/step4.png)
-![video](my_tracking_results.avi)
+![video](img/final.gif)
 ### 2. Do you see any benefits in camera-lidar fusion compared to lidar-only tracking (in theory and in your concrete results)? 
 Adding camera fusion improves the accuracy of the tracking as it improves the detection and decreases overall error in tracking.
 
